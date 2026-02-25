@@ -1,8 +1,70 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { Terminal, ArrowDown, Code2, Braces, Hash } from "lucide-react";
 import { useParallax } from "@/hooks/use-scroll-animation";
+
+// Code snippets for each language
+const CODE_SNIPPETS = [
+  {
+    lang: "Python",
+    file: "solution.py",
+    lines: [
+      { text: "def two_sum(nums, target):", color: "text-primary" },
+      { text: "    seen = {}", color: "text-accent" },
+      { text: "    for i, num in enumerate(nums):", color: "text-muted-foreground" },
+      { text: "        diff = target - num", color: "text-accent" },
+      { text: "        if diff in seen:", color: "text-primary" },
+      { text: "            return [seen[diff], i]", color: "text-primary" },
+      { text: "        seen[num] = i", color: "text-muted-foreground" },
+    ],
+  },
+  {
+    lang: "C++",
+    file: "solution.cpp",
+    lines: [
+      { text: "#include <unordered_map>", color: "text-muted-foreground" },
+      { text: "vector<int> twoSum(vector<int>& nums, int target) {", color: "text-primary" },
+      { text: "    unordered_map<int,int> seen;", color: "text-accent" },
+      { text: "    for (int i = 0; i < nums.size(); i++) {", color: "text-muted-foreground" },
+      { text: "        int diff = target - nums[i];", color: "text-accent" },
+      { text: "        if (seen.count(diff)) return {seen[diff], i};", color: "text-primary" },
+      { text: "        seen[nums[i]] = i;", color: "text-muted-foreground" },
+      { text: "    }", color: "text-muted-foreground" },
+      { text: "}", color: "text-primary" },
+    ],
+  },
+  {
+    lang: "Java",
+    file: "Solution.java",
+    lines: [
+      { text: "public int[] twoSum(int[] nums, int target) {", color: "text-primary" },
+      { text: "    Map<Integer,Integer> seen = new HashMap<>();", color: "text-accent" },
+      { text: "    for (int i = 0; i < nums.length; i++) {", color: "text-muted-foreground" },
+      { text: "        int diff = target - nums[i];", color: "text-accent" },
+      { text: "        if (seen.containsKey(diff))", color: "text-primary" },
+      { text: "            return new int[]{seen.get(diff), i};", color: "text-primary" },
+      { text: "        seen.put(nums[i], i);", color: "text-muted-foreground" },
+      { text: "    }", color: "text-muted-foreground" },
+      { text: "}", color: "text-primary" },
+    ],
+  },
+  {
+    lang: "C",
+    file: "solution.c",
+    lines: [
+      { text: "#include <stdlib.h>", color: "text-muted-foreground" },
+      { text: "int* twoSum(int* nums, int n, int target) {", color: "text-primary" },
+      { text: "    for (int i = 0; i < n; i++) {", color: "text-muted-foreground" },
+      { text: "        for (int j = i+1; j < n; j++) {", color: "text-muted-foreground" },
+      { text: "            if (nums[i]+nums[j] == target) {", color: "text-accent" },
+      { text: '                int* res = malloc(2*sizeof(int));', color: "text-primary" },
+      { text: "                res[0]=i; res[1]=j;", color: "text-primary" },
+      { text: "                return res;", color: "text-accent" },
+      { text: "    } } } return NULL; }", color: "text-muted-foreground" },
+    ],
+  },
+];
 
 function AnimatedCounter({ target, label }: { target: number; label: string }) {
   const [count, setCount] = useState(0);
@@ -64,46 +126,173 @@ function FloatingParticle({
   );
 }
 
-function CodeLine({
-  text,
-  delay,
-  color = "text-primary",
-}: {
-  text: string;
-  delay: number;
-  color?: string;
-}) {
-  const [visible, setVisible] = useState(false);
+function TypingCodeAnimation() {
+  const [snippetIndex, setSnippetIndex] = useState(0);
+  const [displayedLines, setDisplayedLines] = useState<string[]>([]);
+  const [currentLineIndex, setCurrentLineIndex] = useState(0);
+  const [currentCharIndex, setCurrentCharIndex] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const snippet = CODE_SNIPPETS[snippetIndex];
 
   useEffect(() => {
-    const timer = setTimeout(() => setVisible(true), delay);
-    return () => clearTimeout(timer);
-  }, [delay]);
+    if (isDeleting) {
+      // Clear lines one by one from bottom
+      if (displayedLines.length > 0) {
+        const timer = setTimeout(() => {
+          setDisplayedLines((prev) => prev.slice(0, -1));
+        }, 40);
+        return () => clearTimeout(timer);
+      } else {
+        // Move to next snippet
+        setIsDeleting(false);
+        setSnippetIndex((prev) => (prev + 1) % CODE_SNIPPETS.length);
+        setCurrentLineIndex(0);
+        setCurrentCharIndex(0);
+        return;
+      }
+    }
+
+    // Typing mode
+    if (currentLineIndex >= snippet.lines.length) {
+      // Done typing all lines, pause then start deleting
+      const timer = setTimeout(() => setIsDeleting(true), 2000);
+      return () => clearTimeout(timer);
+    }
+
+    const currentLine = snippet.lines[currentLineIndex].text;
+
+    if (currentCharIndex <= currentLine.length) {
+      const timer = setTimeout(() => {
+        const partial = currentLine.slice(0, currentCharIndex);
+        setDisplayedLines((prev) => {
+          const newLines = [...prev];
+          newLines[currentLineIndex] = partial;
+          return newLines;
+        });
+        setCurrentCharIndex((prev) => prev + 1);
+      }, 25 + Math.random() * 20);
+      return () => clearTimeout(timer);
+    } else {
+      // Move to next line
+      setCurrentLineIndex((prev) => prev + 1);
+      setCurrentCharIndex(0);
+    }
+  }, [
+    snippetIndex,
+    currentLineIndex,
+    currentCharIndex,
+    isDeleting,
+    displayedLines.length,
+    snippet.lines,
+  ]);
+
+  const isTypingComplete = currentLineIndex >= snippet.lines.length && !isDeleting;
+  const showCursorOnLine = isDeleting ? -1 : currentLineIndex;
+
+  return (
+    <div className="space-y-0.5">
+      {snippet.lines.map((line, i) => {
+        const displayText = displayedLines[i] ?? "";
+        const isCurrentLine = i === showCursorOnLine;
+        if (i > currentLineIndex && !isDeleting) return null;
+        if (displayText === "" && !isCurrentLine) return null;
+
+        return (
+          <div
+            key={`${snippetIndex}-${i}`}
+            className={`font-mono text-xs ${line.color} transition-opacity duration-200`}
+          >
+            {displayText}
+            {isCurrentLine && !isTypingComplete && (
+              <span className="inline-block w-[6px] h-[14px] bg-primary ml-0.5 align-middle animate-[blink_1s_step-end_infinite]" />
+            )}
+          </div>
+        );
+      })}
+      {isTypingComplete && (
+        <div className="font-mono text-xs text-muted-foreground">
+          <span className="inline-block w-[6px] h-[14px] bg-primary/60 align-middle animate-[blink_1s_step-end_infinite]" />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function MouseGlow({ containerRef }: { containerRef: React.RefObject<HTMLElement | null> }) {
+  const [pos, setPos] = useState({ x: 0, y: 0 });
+  const [visible, setVisible] = useState(false);
+  const rafRef = useRef<number>(0);
+
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (!containerRef.current) return;
+      const rect = containerRef.current.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      rafRef.current = requestAnimationFrame(() => {
+        setPos({ x, y });
+        setVisible(true);
+      });
+    },
+    [containerRef]
+  );
+
+  const handleMouseLeave = useCallback(() => {
+    setVisible(false);
+  }, []);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    el.addEventListener("mousemove", handleMouseMove);
+    el.addEventListener("mouseleave", handleMouseLeave);
+    return () => {
+      el.removeEventListener("mousemove", handleMouseMove);
+      el.removeEventListener("mouseleave", handleMouseLeave);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, [containerRef, handleMouseMove, handleMouseLeave]);
 
   return (
     <div
-      className={`font-mono text-xs transition-all duration-500 ${
-        visible
-          ? `opacity-100 translate-x-0 ${color}`
-          : "opacity-0 -translate-x-4"
-      }`}
-      style={{ transitionDelay: `${delay}ms` }}
-    >
-      {text}
-    </div>
+      className="pointer-events-none absolute rounded-full bg-primary/10 blur-3xl transition-opacity duration-500"
+      style={{
+        width: 300,
+        height: 300,
+        left: pos.x - 150,
+        top: pos.y - 150,
+        opacity: visible ? 1 : 0,
+      }}
+    />
   );
 }
 
 export function HeroSection() {
   const scrollY = useParallax();
   const [mounted, setMounted] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
+  const [snippetIndex, setSnippetIndex] = useState(0);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
+  // Track snippet index changes from TypingCodeAnimation via an interval
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSnippetIndex((prev) => (prev + 1) % CODE_SNIPPETS.length);
+    }, 12000); // Roughly matches the typing cycle
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <section className="relative overflow-hidden px-6 py-20 md:py-28">
+    <section ref={sectionRef} className="relative overflow-hidden px-6 py-20 md:py-28">
+      {/* Mouse-following glow */}
+      <MouseGlow containerRef={sectionRef} />
+
       {/* Parallax gradient background */}
       <div
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/8 via-transparent to-transparent transition-opacity duration-500"
@@ -223,7 +412,7 @@ export function HeroSection() {
           </div>
         </div>
 
-        {/* Animated code snippet in the hero */}
+        {/* Animated code snippet with typing effect */}
         <div
           className={`mx-auto mt-12 max-w-md rounded-xl border border-border bg-secondary/50 p-4 text-left backdrop-blur-sm transition-all duration-700 ${
             mounted
@@ -236,43 +425,15 @@ export function HeroSection() {
             <div className="h-2.5 w-2.5 rounded-full bg-destructive/70" />
             <div className="h-2.5 w-2.5 rounded-full bg-accent/70" />
             <div className="h-2.5 w-2.5 rounded-full bg-primary/70" />
-            <span className="ml-2 text-[10px] text-muted-foreground">
-              solution.js
+            <span className="ml-2 text-[10px] text-muted-foreground transition-all duration-300">
+              {CODE_SNIPPETS[snippetIndex % CODE_SNIPPETS.length].file}
+            </span>
+            <span className="ml-auto rounded bg-primary/10 px-1.5 py-0.5 text-[9px] font-semibold text-primary">
+              {CODE_SNIPPETS[snippetIndex % CODE_SNIPPETS.length].lang}
             </span>
           </div>
-          <div className="space-y-1">
-            <CodeLine
-              text="function twoSum(nums, target) {"
-              delay={1200}
-              color="text-primary"
-            />
-            <CodeLine
-              text="  const map = new Map();"
-              delay={1400}
-              color="text-accent"
-            />
-            <CodeLine
-              text="  for (let i = 0; i < nums.length; i++) {"
-              delay={1600}
-              color="text-muted-foreground"
-            />
-            <CodeLine
-              text="    const diff = target - nums[i];"
-              delay={1800}
-              color="text-accent"
-            />
-            <CodeLine
-              text="    if (map.has(diff)) return [map.get(diff), i];"
-              delay={2000}
-              color="text-primary"
-            />
-            <CodeLine
-              text="    map.set(nums[i], i);"
-              delay={2200}
-              color="text-muted-foreground"
-            />
-            <CodeLine text="  }" delay={2400} color="text-muted-foreground" />
-            <CodeLine text="}" delay={2600} color="text-primary" />
+          <div className="min-h-[140px]">
+            <TypingCodeAnimation />
           </div>
         </div>
 

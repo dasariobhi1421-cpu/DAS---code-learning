@@ -1,14 +1,15 @@
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
+import { Toaster } from 'sonner'
 import './globals.css'
 
 const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'DSALab - Learn DSA with Theory & Practice',
-  description: 'Master Data Structures & Algorithms with curated video lectures and hands-on coding problems. Theory first, practice second.',
+  title: 'DSALab - Learn DSA with Theory, Practice & Multi-Language Code Execution',
+  description: 'Master Data Structures & Algorithms with curated video lectures, hands-on coding problems in C, C++, Java, and Python. Track your progress with a student dashboard.',
   generator: 'v0.app',
   icons: {
     icon: [
@@ -38,6 +39,17 @@ export default function RootLayout({
     <html lang="en">
       <body className="font-sans antialiased">
         {children}
+        <Toaster
+          theme="dark"
+          position="top-right"
+          toastOptions={{
+            style: {
+              background: "var(--card)",
+              border: "1px solid var(--border)",
+              color: "var(--foreground)",
+            },
+          }}
+        />
         <Analytics />
       </body>
     </html>

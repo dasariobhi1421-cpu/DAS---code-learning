@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Code2, BookOpen, Terminal } from "lucide-react";
+import { Code2, BookOpen, Terminal, LayoutDashboard } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function Navbar() {
@@ -32,6 +32,18 @@ export function Navbar() {
           >
             <BookOpen className="h-4 w-4" />
             <span className="hidden sm:inline">Topics</span>
+          </Link>
+          <Link
+            href="/dashboard"
+            className={cn(
+              "flex items-center gap-1.5 text-sm font-medium transition-colors",
+              pathname === "/dashboard"
+                ? "text-primary"
+                : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            <LayoutDashboard className="h-4 w-4" />
+            <span className="hidden sm:inline">Dashboard</span>
           </Link>
           <Link
             href="/#problems"

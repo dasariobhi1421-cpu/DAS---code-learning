@@ -14,6 +14,12 @@ export interface Problem {
   examples: { input: string; output: string; explanation?: string }[];
   constraints: string[];
   starterCode: string;
+  starterCodes?: {
+    c: string;
+    cpp: string;
+    java: string;
+    python: string;
+  };
   tags: string[];
   logic: string[];
   timeComplexity: string;
@@ -743,7 +749,7 @@ export const topics: Topic[] = [
 
   // ────────────────────────────────────────────
   // 4. STACKS & QUEUES
-  // ────────────────────────────────────────────
+  // ─────��──────────────────────────────────────
   {
     id: "stacks-queues",
     title: "Stacks & Queues",
