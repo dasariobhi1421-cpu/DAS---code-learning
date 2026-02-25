@@ -74,8 +74,8 @@ export default async function ProblemPage({
 
         {/* Problem Layout */}
         <div className="flex flex-col gap-6 lg:flex-row">
-          {/* Left: Description */}
-          <div className="w-full lg:w-1/2">
+          {/* Left: Description + Logic + Solution Video */}
+          <div className="w-full lg:w-1/2 lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto lg:pr-2">
             <ProblemDescription problem={problem} />
           </div>
 

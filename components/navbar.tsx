@@ -46,7 +46,7 @@ export function Navbar() {
           <div className="hidden items-center gap-2 rounded-lg border border-border bg-secondary px-3 py-1.5 sm:flex">
             <div className="h-2 w-2 rounded-full bg-primary" />
             <span className="text-xs text-muted-foreground">
-              6 Topics Available
+              12 Topics Available
             </span>
           </div>
         </div>

@@ -10,6 +10,12 @@ import {
   PlayCircle,
   Code2,
   ArrowRight,
+  Search,
+  Network,
+  Hash,
+  ArrowUpDown,
+  Repeat,
+  Zap,
 } from "lucide-react";
 
 const iconMap: Record<string, React.ElementType> = {
@@ -19,6 +25,12 @@ const iconMap: Record<string, React.ElementType> = {
   layers: Layers,
   "git-branch": GitBranch,
   brain: Brain,
+  search: Search,
+  network: Network,
+  hash: Hash,
+  "arrow-up-down": ArrowUpDown,
+  repeat: Repeat,
+  zap: Zap,
 };
 
 export function TopicCard({ topic }: { topic: Topic }) {

@@ -13,8 +13,13 @@ import {
   PlayCircle,
   Code2,
   ArrowLeft,
+  Search,
+  Network,
+  Hash,
+  ArrowUpDown,
+  Repeat,
+  Zap,
 } from "lucide-react";
-import Link from "next/link";
 
 const iconMap: Record<string, React.ElementType> = {
   brackets: Brackets,
@@ -23,6 +28,12 @@ const iconMap: Record<string, React.ElementType> = {
   layers: Layers,
   "git-branch": GitBranch,
   brain: Brain,
+  search: Search,
+  network: Network,
+  hash: Hash,
+  "arrow-up-down": ArrowUpDown,
+  repeat: Repeat,
+  zap: Zap,
 };
 
 export function generateStaticParams() {

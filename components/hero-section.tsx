@@ -44,22 +44,22 @@ export function HeroSection() {
               ))}
             </div>
             <span className="text-sm text-muted-foreground">
-              6 Topics, 24+ Problems
+              12 Topics, 60+ Problems
             </span>
           </div>
         </div>
 
         <div className="mx-auto mt-16 grid max-w-lg grid-cols-3 gap-8">
           <div className="text-center">
-            <div className="text-2xl font-bold text-foreground">6</div>
+            <div className="text-2xl font-bold text-foreground">12</div>
             <div className="text-xs text-muted-foreground">Core Topics</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-primary">15</div>
+            <div className="text-2xl font-bold text-primary">27</div>
             <div className="text-xs text-muted-foreground">Video Lessons</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-foreground">24+</div>
+            <div className="text-2xl font-bold text-foreground">62</div>
             <div className="text-xs text-muted-foreground">Practice Problems</div>
           </div>
         </div>
