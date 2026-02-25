@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { topics } from "@/lib/data";
 import { Navbar } from "@/components/navbar";
 import { VideoPlayer } from "@/components/video-player";
