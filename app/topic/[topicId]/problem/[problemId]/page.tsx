@@ -3,6 +3,7 @@ import { topics } from "@/lib/data";
 import { Navbar } from "@/components/navbar";
 import { CodeEditor } from "@/components/code-editor";
 import { ProblemDescription } from "@/components/problem-description";
+import { getStarterCodes } from "@/lib/starter-codes";
 import Link from "next/link";
 import { ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -31,6 +32,7 @@ export default async function ProblemPage({
   const problem = topic.problems[problemIndex];
   const prevProblem = topic.problems[problemIndex - 1] || null;
   const nextProblem = topic.problems[problemIndex + 1] || null;
+  const multiLangCodes = getStarterCodes(problem);
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
@@ -82,7 +84,14 @@ export default async function ProblemPage({
           {/* Right: Code Editor */}
           <div className="w-full lg:w-1/2">
             <div className="sticky top-24">
-              <CodeEditor starterCode={problem.starterCode} />
+              <CodeEditor
+                starterCode={problem.starterCode}
+                starterCodes={multiLangCodes}
+                problemId={problem.id}
+                problemTitle={problem.title}
+                topicId={topicId}
+                topicTitle={topic.title}
+              />
             </div>
           </div>
         </div>
